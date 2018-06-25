@@ -2,15 +2,13 @@
 # 2018
 import requests
 import json
-
+import config
 
 def get_resto_data(input_search):
-  google_API_key = "AIzaSyA6cM8bxbFvn9ZyLqIINIAeKEhKo_-vVC8"
+  google_API_key = config.google_API_key
 
   fields = ['name', 'formatted_address', 'rating', 'opening_hours']
   fields_formatted = ",".join(fields)
-
-  print(fields_formatted)
 
   parameters = {'key' : google_API_key, 'input' : input_search, 'inputtype' : 'textquery', 'fields' : fields_formatted, 'locationbias' : 'ipbias'}
 
@@ -25,26 +23,22 @@ def highest_rated_from_list(resto_list):
   for resto in resto_list:
       raw_data_list.append(get_resto_data(resto))
 
-  # {name : rating}
-  ratings_dict = {}
+
+  ratings_list = []
 
   for entry in raw_data_list:
     # take first candidate (if multiple)
     entry = entry["candidates"][0]
-    name = entry["name"]
-    rating = entry["rating"]
-    ratings_dict[name] = rating
+    ratings_list.append((entry["name"], entry["rating"], entry["formatted_address"]))
 
-  top_ratings = sorted(ratings_dict, key=ratings_dict.get)
-  print(top_ratings)
-
-
-
-
+  return ratings_list
 
 # print(get_resto_data('jin ramen'))
 resto_list_test = ['ippudo ramen', 'jin ramen', 'momofuku noodle bar']
-highest_rated_from_list(resto_list_test)
+print(highest_rated_from_list(resto_list_test))
+
+# TODO: how long of a drive/walk from current location/address
+
 
 """
 {
